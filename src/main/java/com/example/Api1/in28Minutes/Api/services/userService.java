@@ -40,6 +40,19 @@ public class userService {
         return user;
     }
 
+    public boolean updateUser (Long id, userEntity user) {
+        Predicate <? super userEntity> predicate = userEntity -> userEntity.getId().equals(id);
+        userEntity foundUser = users.stream().filter(predicate).findFirst().orElseThrow(null);
+        if (foundUser != null) {
+            foundUser.setName(user.getName());
+            foundUser.setBirthdate(user.getBirthdate());
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     public boolean deleteUserById (Long id) {
         Predicate<? super userEntity> predicate = userEntity -> userEntity.getId().equals(id);
         return users.removeIf(predicate);

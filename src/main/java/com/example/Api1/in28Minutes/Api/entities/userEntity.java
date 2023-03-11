@@ -2,6 +2,8 @@ package com.example.Api1.in28Minutes.Api.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
@@ -10,7 +12,9 @@ public class userEntity {
     //Attributes
     @Id
     private Long id;
+    @Size(min = 2, message = "Name should have at least 2 characters in length.")
     private String name;
+    @Past (message = "Birthday cannot be from future dates.")
     private LocalDate birthdate;
 
     //Constructors

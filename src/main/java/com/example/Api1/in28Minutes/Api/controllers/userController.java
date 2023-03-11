@@ -3,6 +3,7 @@ package com.example.Api1.in28Minutes.Api.controllers;
 import com.example.Api1.in28Minutes.Api.entities.userEntity;
 import com.example.Api1.in28Minutes.Api.exceptions.resourceNotFoundException;
 import com.example.Api1.in28Minutes.Api.services.userService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -11,7 +12,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping (value = "users")
+@RequestMapping (value = "v1/users")
 public class userController {
 
     //Services
@@ -38,7 +39,7 @@ public class userController {
     }
 
     @PostMapping
-    public ResponseEntity<userEntity> addNewUser (@RequestBody userEntity user) {
+    public ResponseEntity<userEntity> addNewUser (@Valid @RequestBody userEntity user) {
         userEntity savedUser =  userservice.saveUser(user);
         if (savedUser != null){
             URI location = ServletUriComponentsBuilder
@@ -50,6 +51,16 @@ public class userController {
         }
         else{
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping (value = "/{id}")
+    public ResponseEntity<userEntity> updateUser(@PathVariable Long id, @RequestBody @Valid userEntity user) {
+        if (userservice.updateUser(id, user)) {
+            return ResponseEntity.ok().build();
+        }
+        else {
+            return ResponseEntity.notFound().build();
         }
     }
 
