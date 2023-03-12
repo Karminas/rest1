@@ -4,12 +4,16 @@ import com.example.Api1.in28Minutes.Api.entities.userEntity;
 import com.example.Api1.in28Minutes.Api.exceptions.resourceNotFoundException;
 import com.example.Api1.in28Minutes.Api.services.userService;
 import jakarta.validation.Valid;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping (value = "v1/users")
@@ -30,12 +34,18 @@ public class userController {
     }
 
     @GetMapping (value = "{id}")
-    public userEntity getUserById(@PathVariable Long id) {
+    public EntityModel<userEntity> getUserById(@PathVariable Long id) {
         userEntity foundUser =  userservice.findUserById(id);
+
         if (foundUser == null) {
             throw new resourceNotFoundException("User was not found");
         }
-        else {return foundUser;}
+        else {
+            EntityModel<userEntity> entityModel = EntityModel.of(foundUser);
+            WebMvcLinkBuilder link =  WebMvcLinkBuilder.linkTo(methodOn(this.getClass()).getAllUsers());
+            entityModel.add(link.withRel("all-users"));
+            return entityModel;
+        }
     }
 
     @PostMapping

@@ -1,5 +1,7 @@
 package com.example.Api1.in28Minutes.Api.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Past;
@@ -9,12 +11,18 @@ import java.time.LocalDate;
 
 @Entity
 public class userEntity {
+
     //Attributes
     @Id
+    @JsonIgnore
     private Long id;
+
     @Size(min = 2, message = "Name should have at least 2 characters in length.")
+    @JsonProperty("user_name")
     private String name;
+
     @Past (message = "Birthday cannot be from future dates.")
+    @JsonProperty("date_of_birth")
     private LocalDate birthdate;
 
     //Constructors
