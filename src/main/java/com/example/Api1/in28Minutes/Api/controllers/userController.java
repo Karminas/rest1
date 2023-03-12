@@ -1,6 +1,7 @@
 package com.example.Api1.in28Minutes.Api.controllers;
 
-import com.example.Api1.in28Minutes.Api.entities.userEntity;
+import com.example.Api1.in28Minutes.Api.entities.PostEntity;
+import com.example.Api1.in28Minutes.Api.entities.UserEntity;
 import com.example.Api1.in28Minutes.Api.exceptions.resourceNotFoundException;
 import com.example.Api1.in28Minutes.Api.services.userService;
 import jakarta.validation.Valid;
@@ -29,19 +30,19 @@ public class userController {
 
     //Methods
     @GetMapping
-    public List<userEntity> getAllUsers() {
+    public List<UserEntity> getAllUsers() {
         return userservice.getAllUsers();
     }
 
     @GetMapping (value = "{id}")
-    public EntityModel<userEntity> getUserById(@PathVariable Long id) {
-        userEntity foundUser =  userservice.findUserById(id);
+    public EntityModel<UserEntity> getUserById(@PathVariable Long id) {
+        UserEntity foundUser =  userservice.findUserById(id);
 
         if (foundUser == null) {
             throw new resourceNotFoundException("User was not found");
         }
         else {
-            EntityModel<userEntity> entityModel = EntityModel.of(foundUser);
+            EntityModel<UserEntity> entityModel = EntityModel.of(foundUser);
             WebMvcLinkBuilder link =  WebMvcLinkBuilder.linkTo(methodOn(this.getClass()).getAllUsers());
             entityModel.add(link.withRel("all-users"));
             return entityModel;
@@ -49,8 +50,8 @@ public class userController {
     }
 
     @PostMapping
-    public ResponseEntity<userEntity> addNewUser (@Valid @RequestBody userEntity user) {
-        userEntity savedUser =  userservice.saveUser(user);
+    public ResponseEntity<UserEntity> addNewUser (@Valid @RequestBody UserEntity user) {
+        UserEntity savedUser =  userservice.saveUser(user);
         if (savedUser != null){
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
@@ -65,22 +66,19 @@ public class userController {
     }
 
     @PostMapping (value = "/{id}")
-    public ResponseEntity<userEntity> updateUser(@PathVariable Long id, @RequestBody @Valid userEntity user) {
-        if (userservice.updateUser(id, user)) {
-            return ResponseEntity.ok().build();
-        }
-        else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<UserEntity> updateUser(@PathVariable Long id, @RequestBody @Valid UserEntity user) {
+        userservice.updateUser(id, user);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping (value = "{id}")
-    public ResponseEntity<userEntity> deleteUserById (@PathVariable Long id) {
-        if (userservice.deleteUserById(id)) {
-            return ResponseEntity.ok().build();
-        }
-        else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<UserEntity> deleteUserById (@PathVariable Long id) {
+        userservice.deleteUserById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping (value = "{id}/posts")
+    public List<PostEntity> getAllUserPosts (@PathVariable Long id) {
+        return userservice.getAllUserPosts(id);
     }
 }

@@ -1,60 +1,56 @@
 package com.example.Api1.in28Minutes.Api.services;
 
-import com.example.Api1.in28Minutes.Api.entities.userEntity;
+import com.example.Api1.in28Minutes.Api.entities.PostEntity;
+import com.example.Api1.in28Minutes.Api.entities.UserEntity;
+import com.example.Api1.in28Minutes.Api.repositories.PostRepository;
+import com.example.Api1.in28Minutes.Api.repositories.UserRepository;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 @Service
 public class userService {
 
-    //Creation of static list of users
-    private static List<userEntity> users = new ArrayList<>();
+    //Repositories
+    private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
-    private static Long idCounter = 3L;
-    static {
-        userEntity userEntity1 = new userEntity(1L, "Tupac", LocalDate.now());
-        userEntity userEntity2 = new userEntity(2L, "Alejandro", LocalDate.now());
-        userEntity userEntity3 = new userEntity(3L, "Ocampo", LocalDate.now());
-
-        users.add(userEntity1);
-        users.add(userEntity2);
-        users.add(userEntity3);
+    //Constructor
+    public userService(UserRepository userRepository, PostRepository postRepository) {
+        this.userRepository = userRepository;
+        this.postRepository = postRepository;
     }
 
     //Service methods
-    public List<userEntity> getAllUsers() {
-        return users;
+    public List<UserEntity> getAllUsers() {
+        return userRepository.findAll();
     }
 
-    public userEntity findUserById (Long id) {
-        return users.stream().filter(user -> user.getId().equals(id)).findFirst().orElse(null);
+    public UserEntity findUserById (Long id) {
+        // Create custom exceptions
+        return userRepository.findById(id).orElse(null);
     }
 
-    public userEntity saveUser(userEntity user) {
-        user.setId(++idCounter);
-        users.add(user);
-        return user;
+    public UserEntity saveUser(UserEntity user) {
+        return userRepository.save(user);
     }
 
-    public boolean updateUser (Long id, userEntity user) {
-        Predicate <? super userEntity> predicate = userEntity -> userEntity.getId().equals(id);
-        userEntity foundUser = users.stream().filter(predicate).findFirst().orElseThrow(null);
-        if (foundUser != null) {
-            foundUser.setName(user.getName());
-            foundUser.setBirthdate(user.getBirthdate());
-            return true;
-        }
-        else {
-            return false;
-        }
+    public void updateUser (Long id, UserEntity user) {
+        //Missing: Throw exception
+        UserEntity foundUser = userRepository.findById(id).orElse(null);
+        foundUser.setName(user.getName());
+        foundUser.setBirthdate(user.getBirthdate());
+
+        userRepository.deleteById(id);
+        userRepository.save(foundUser);
     }
 
-    public boolean deleteUserById (Long id) {
-        Predicate<? super userEntity> predicate = userEntity -> userEntity.getId().equals(id);
-        return users.removeIf(predicate);
+    public void deleteUserById (Long id) {
+        //Missing: Throw exception
+        userRepository.findById(id).orElse(null);
+        userRepository.deleteById(id);
+    }
+
+    public List<PostEntity> getAllUserPosts (Long id) {
+        return userRepository.findById(id).get().getPosts();
     }
 }

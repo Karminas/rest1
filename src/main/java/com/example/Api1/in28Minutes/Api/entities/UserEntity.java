@@ -1,35 +1,36 @@
 package com.example.Api1.in28Minutes.Api.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
-public class userEntity {
+public class UserEntity {
 
     //Attributes
     @Id
     @JsonIgnore
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Size(min = 2, message = "Name should have at least 2 characters in length.")
-    @JsonProperty("user_name")
     private String name;
 
     @Past (message = "Birthday cannot be from future dates.")
-    @JsonProperty("date_of_birth")
     private LocalDate birthdate;
 
+    @OneToMany (mappedBy = "user", cascade = CascadeType.ALL)
+    private List<PostEntity> posts;
+
     //Constructors
-    public userEntity() {
+    public UserEntity() {
     }
     
-    public userEntity(Long id, String name, LocalDate birthdate) {
+    public UserEntity(Long id, String name, LocalDate birthdate) {
         this.id = id;
         this.name = name;
         this.birthdate = birthdate;
@@ -58,6 +59,14 @@ public class userEntity {
 
     public void setBirthdate(LocalDate birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public List<PostEntity> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<PostEntity> posts) {
+        this.posts = posts;
     }
 
     //ToString
