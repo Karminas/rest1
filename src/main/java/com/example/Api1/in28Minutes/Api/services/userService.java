@@ -53,4 +53,10 @@ public class userService {
     public List<PostEntity> getAllUserPosts (Long id) {
         return userRepository.findById(id).get().getPosts();
     }
+
+    public void addUserPost (Long id, PostEntity post) {
+        UserEntity foundUser = userRepository.findById(id).orElse(null);
+        post.setUser(foundUser);
+        postRepository.save(post);
+    }
 }

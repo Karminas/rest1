@@ -81,4 +81,9 @@ public class userController {
     public List<PostEntity> getAllUserPosts (@PathVariable Long id) {
         return userservice.getAllUserPosts(id);
     }
+
+    @PostMapping (value = "{id}/posts")
+    public void addUserPost(@PathVariable Long id, @RequestBody @Valid PostEntity post) {
+        userservice.addUserPost(id, post);
+    }
 }
